@@ -2,7 +2,6 @@ package az.orient.bank.service.impl;
 
 import az.orient.bank.dto.request.ReqAccount;
 import az.orient.bank.dto.response.RespAccount;
-import az.orient.bank.dto.response.RespCustomer;
 import az.orient.bank.dto.response.RespStatus;
 import az.orient.bank.dto.response.Response;
 import az.orient.bank.entity.Account;
@@ -64,7 +63,7 @@ public class AccountServiceImpl implements AccountService {
     public Response<RespAccount> getAccountById(Long accountId) {
         Response<RespAccount> response = new Response<>();
         try {
-            if(accountId == null) {
+            if (accountId == null) {
                 throw new BankException(ExceptionConstants.INVALID_REQUEST_DATA, "Invalid request data");
             }
             Account account = accountRepository.findAccountByIdAndActive(accountId, EnumStatus.ACTIVE.getValue());
@@ -74,10 +73,10 @@ public class AccountServiceImpl implements AccountService {
             RespAccount respAccount = convert(account);
             response.setStatus(RespStatus.success());
             response.setT(respAccount);
-        }catch (BankException e) {
+        } catch (BankException e) {
             e.printStackTrace();
             response.setStatus(new RespStatus(e.getCode(), e.getMessage()));
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             response.setStatus(new RespStatus(ExceptionConstants.INTERNAL_EXCEPTION, "Internal exception"));
         }
@@ -105,7 +104,7 @@ public class AccountServiceImpl implements AccountService {
             if (reqAccount == null) {
                 throw new BankException(ExceptionConstants.INVALID_REQUEST_DATA, "Invalid request data");
             }
-            Long id=reqAccount.getCustomerId();
+            Long id = reqAccount.getCustomerId();
             Customer customer = customerRepository.findCustomerByIdAndActive(id, EnumStatus.ACTIVE.getValue());
             if (customer == null) {
                 throw new BankException(ExceptionConstants.CUSTOMER_NOT_FOUND, "Customer not found");
@@ -118,10 +117,10 @@ public class AccountServiceImpl implements AccountService {
                     currency(reqAccount.getCurrency()).build();
             accountRepository.save(account);
             response.setStatus(RespStatus.success());
-        }catch (BankException e) {
+        } catch (BankException e) {
             e.printStackTrace();
             response.setStatus(new RespStatus(e.getCode(), e.getMessage()));
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             response.setStatus(new RespStatus(ExceptionConstants.INTERNAL_EXCEPTION, "Internal exception"));
         }
@@ -161,4 +160,29 @@ public class AccountServiceImpl implements AccountService {
 
         return response;
     }
+
+    @Override
+    public Response deleteAccount(Long accountId) {
+        Response response = new Response();
+        try {
+            if (accountId == null) {
+                throw new BankException(ExceptionConstants.INVALID_REQUEST_DATA, "Invalid request data");
+            }
+            Account account = accountRepository.findAccountByIdAndActive(accountId, EnumStatus.ACTIVE.getValue());
+            if (account == null) {
+                throw new BankException(ExceptionConstants.ACCOUNT_NOT_FOUND, "Account not found");
+            }
+            account.setActive(EnumStatus.DEACTIVE.getValue());
+            response.setT(account);
+            accountRepository.save(account);
+            response.setStatus(RespStatus.success());
+        } catch (BankException e) {
+            e.printStackTrace();
+            response.setStatus(new RespStatus(e.getCode(), e.getMessage()));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            response.setStatus(new RespStatus(ExceptionConstants.INTERNAL_EXCEPTION, "Internal exception"));
+        }
+        return response;
     }
+}

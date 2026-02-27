@@ -39,7 +39,7 @@ public class AccountController {
 
     @DeleteMapping("/delete/{accountId}")
     public Response deleteAccount(@PathVariable Long accountId) {
-        return null;
+        return accountService.deleteAccount(accountId);
     }
 
 

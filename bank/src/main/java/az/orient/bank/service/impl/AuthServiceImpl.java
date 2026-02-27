@@ -1,0 +1,83 @@
+package az.orient.bank.service.impl;
+
+import az.orient.bank.dto.request.ReqAuth;
+import az.orient.bank.dto.response.RespAuth;
+import az.orient.bank.dto.response.RespStatus;
+import az.orient.bank.dto.response.Response;
+import az.orient.bank.entity.Auth;
+import az.orient.bank.enums.EnumStatus;
+import az.orient.bank.exception.BankException;
+import az.orient.bank.exception.ExceptionConstants;
+import az.orient.bank.repository.AuthRepository;
+import az.orient.bank.service.AuthService;
+import az.orient.bank.util.Utility;
+import jdk.jshell.execution.Util;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class AuthServiceImpl implements AuthService {
+
+
+    public final AuthRepository authRepository;
+    public final Utility utility;
+
+    @Override
+    public Response login(ReqAuth reqAuth) {
+        Response response = new Response();
+        RespAuth respAuth = new RespAuth();
+        try {
+            if (reqAuth == null) {
+                throw new BankException(ExceptionConstants.INVALID_REQUEST_DATA, "Invalid request Data");
+            }
+            Auth auth = authRepository.findAuthByUsernameAndPasswordAndActive(
+                    reqAuth.getUsername(),
+                    reqAuth.getPassword(),
+                    EnumStatus.ACTIVE.getValue());
+            System.out.println(auth);
+            String token = auth.getToken();
+            if (auth == null) {
+                throw new BankException(ExceptionConstants.USER_OR_PASSWORD_NOT_CORRECT, "Username or password incorrect");
+            }
+            if (token != null) {
+                throw new BankException(ExceptionConstants.SESSION_ALREADY_EXIST, "Session already exist");
+            }
+            auth.setToken(UUID.randomUUID().toString());
+            authRepository.save(auth);
+            respAuth.setCompanyName(auth.getCompanyName());
+            respAuth.setToken(auth.getToken());
+            respAuth.setUsername(auth.getUsername());
+            response.setT(respAuth);
+            response.setStatus(RespStatus.success());
+        } catch (BankException e) {
+            e.printStackTrace();
+            response.setStatus(new RespStatus(e.getCode(), e.getMessage()));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            response.setStatus(new RespStatus(ExceptionConstants.INTERNAL_EXCEPTION, "Internal exception"));
+        }
+        return response;
+    }
+
+    @Override
+    public Response logout(String token, String username) {
+        Response response = new Response();
+        try {
+            Auth auth = utility.checkToken(token,username);
+            auth.setToken(null);
+            authRepository.save(auth);
+            response.setStatus(RespStatus.success());
+        } catch (BankException e) {
+            e.printStackTrace();
+            response.setStatus(new RespStatus(e.getCode(), e.getMessage()));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            response.setStatus(new RespStatus(ExceptionConstants.INTERNAL_EXCEPTION, "Internal exception"));
+        }
+
+        return response;
+    }
+}
