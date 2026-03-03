@@ -15,7 +15,7 @@ public class SecurityUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-     Auth auth = authRepository.findByUsername(username)
+     var auth = authRepository.findByUsername(username)
              .orElseThrow(()-> new UsernameNotFoundException(username));
         return new SecurityUser(auth);
     }

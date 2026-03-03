@@ -1,5 +1,4 @@
 package az.orient.bank.controller;
-
 import az.orient.bank.dto.request.ReqAuth;
 import az.orient.bank.dto.response.Response;
 import az.orient.bank.service.AuthService;
@@ -11,12 +10,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
-    public final AuthService authservice;
+    private final AuthService authservice;
+
 
 
     @PostMapping("/login")
     public Response auth(@RequestBody ReqAuth reqAuth) {
-        return authservice.login(reqAuth);
+        return authservice.loginSpring(reqAuth);
     }
 
     @PostMapping("/logout")
