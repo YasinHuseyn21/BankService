@@ -14,7 +14,6 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-
     private final Key key;
     private final long expirationMs;
 

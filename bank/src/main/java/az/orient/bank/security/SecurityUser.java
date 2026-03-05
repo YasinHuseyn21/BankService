@@ -16,14 +16,15 @@ public class SecurityUser implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
     }
+    @Override
+    public String getUsername() {
+        return auth.getUsername();
+    }
 
     @Override
     public String getPassword() {
         return auth.getPassword();
     }
 
-    @Override
-    public String getUsername() {
-        return auth.getUsername();
-    }
+
 }

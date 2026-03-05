@@ -1,4 +1,5 @@
 package az.orient.bank.controller;
+
 import az.orient.bank.dto.request.ReqAuth;
 import az.orient.bank.dto.response.Response;
 import az.orient.bank.service.AuthService;
@@ -13,10 +14,15 @@ public class AuthController {
     private final AuthService authservice;
 
 
-
     @PostMapping("/login")
     public Response auth(@RequestBody ReqAuth reqAuth) {
         return authservice.loginSpring(reqAuth);
+    }
+
+
+    @PostMapping("/registration")
+    public Response registration(@RequestBody ReqAuth reqAuth) {
+        return authservice.registration(reqAuth);
     }
 
     @PostMapping("/logout")

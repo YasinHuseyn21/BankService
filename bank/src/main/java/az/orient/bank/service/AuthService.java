@@ -10,4 +10,6 @@ public interface AuthService {
 //    Response login(ReqAuth reqAuth);
 
     Response logout(String token,String username);
+
+    Response registration(ReqAuth reqAuth);
 }

@@ -106,4 +106,24 @@ public class AuthServiceImpl implements AuthService {
 
         return response;
     }
+
+    @Override
+    public Response registration(ReqAuth reqAuth) {
+        Response response = new Response();
+        try {
+            if (reqAuth == null) {
+                throw new BankException(ExceptionConstants.INVALID_REQUEST_DATA, "Invalid Request Data");
+            }
+            Auth auth = new Auth();
+            auth.setUsername(reqAuth.username());
+            auth.setPassword(reqAuth.password());
+
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+
+        return null;
+    }
 }

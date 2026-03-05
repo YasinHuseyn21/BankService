@@ -17,7 +17,7 @@ public class BankApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        System.out.println(encoder.encode("Yasin2000@@"));
+//        System.out.println(encoder.encode("Yasin2000@@"));
 
 
     }
