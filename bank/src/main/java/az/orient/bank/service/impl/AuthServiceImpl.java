@@ -15,7 +15,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +30,8 @@ public class AuthServiceImpl implements AuthService {
     public final Utility utility;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtutil;
+    private final PasswordEncoder bCryptPasswordEncoder;
+
 
     @Override
     public Response loginSpring(ReqAuth reqAuth) {
@@ -116,14 +122,24 @@ public class AuthServiceImpl implements AuthService {
             }
             Auth auth = new Auth();
             auth.setUsername(reqAuth.username());
-            auth.setPassword(reqAuth.password());
+            auth.setPassword(bCryptPasswordEncoder.encode(reqAuth.password()));
+            Optional<Auth> authOptional = authRepository.findByUsername(auth.getUsername());
+            if (authOptional.isPresent()) {
+                throw new BankException(ExceptionConstants.USER_ALREADY_EXIST, "User Already Exist");
+            }
+            authRepository.save(auth);
 
+            response.setStatus(RespStatus.success());
 
+        } catch (BankException e) {
+            e.printStackTrace();
+            response.setStatus(new RespStatus(e.getCode(), e.getMessage()));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            response.setStatus(new RespStatus(ExceptionConstants.INTERNAL_EXCEPTION, "Internal Server Error"));
         }
 
 
-        return null;
+        return response;
     }
 }
